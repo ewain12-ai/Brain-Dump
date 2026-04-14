@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Brain Dump">
+<title>Brain Dump</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  :root {
+    --bg: #FAFAF8; --surface: #FFFFFF; --border: rgba(0,0,0,0.1); --border-strong: rgba(0,0,0,0.2);
+    --text: #1A1A18; --text-muted: #888780; --text-faint: #B4B2A9; --radius: 14px; --radius-sm: 8px;
+    --daily-bg: #E6F1FB; --daily-text: #0C447C; --journal-bg: #EEEDFE; --journal-text: #3C3489;
+    --finance-bg: #EAF3DE; --finance-text: #27500A; --home-bg: #FBEAF0; --home-text: #72243E;
+    --agency-bg: #FAEEDA; --agency-text: #633806; --unsorted-bg: #F1EFE8; --unsorted-text: #5F5E5A;
+    --red: #E24B4A; --red-bg: #FCEBEB; --red-text: #791F1F;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #1A1A18; --surface: #242422; --border: rgba(255,255,255,0.1); --border-strong: rgba(255,255,255,0.2);
+      --text: #F1EFE8; --text-muted: #888780; --text-faint: #5F5E5A;
+      --daily-bg: #042C53; --daily-text: #B5D4F4; --journal-bg: #26215C; --journal-text: #CECBF6;
+      --finance-bg: #173404; --finance-text: #C0DD97; --home-bg: #4B1528; --home-text: #F4C0D1;
+      --agency-bg: #412402; --agency-text: #FAC775; --unsorted-bg: #2C2C2A; --unsorted-text: #B4B2A9;
+      --red-bg: #501313; --red-text: #F7C1C1;
+    }
+  }
+  body { font-family: -apple-system, 'SF Pro Text', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; padding-bottom: 40px; }
+  .header { padding: 56px 20px 16px; background: var(--surface); border-bottom: 0.5px solid var(--border); }
+  .header h1 { font-size: 28px; font-weight: 700; letter-spacing: -0.5px; }
+  .header p { font-size: 13px; color: var(--text-muted); margin-top: 2px; }
+  .section { padding: 16px 20px; }
+  .card { background: var(--surface); border-radius: var(--radius); border: 0.5px solid var(--border); overflow: hidden; }
+  .mic-area { display: flex; flex-direction: column; align-items: center; padding: 24px 20px 16px; }
+  .mic-btn { width: 72px; height: 72px; border-radius: 50%; background: var(--bg); border: 0.5px solid var(--border-strong); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.15s; }
+  .mic-btn svg { width: 26px; height: 26px; color: var(--text); }
+  .mic-label { font-size: 12px; color: var(--text-muted); margin-top: 10px; }
+  .divider { display: flex; align-items: center; gap: 10px; padding: 0 20px 12px; }
+  .divider-line { flex: 1; height: 0.5px; background: var(--border); }
+  .divider-text { font-size: 11px; color: var(--text-faint); text-transform: uppercase; letter-spacing: 0.08em; }
+  textarea { width: 100%; padding: 12px 20px; font-size: 16px; font-family: -apple-system, sans-serif; color: var(--text); background: transparent; border: none; border-top: 0.5px solid var(--border); resize: none; min-height: 90px; outline: none; }
+  textarea::placeholder { color: var(--text-faint); }
+  .save-btn { width: 100%; padding: 14px; font-size: 16px; font-weight: 600; color: var(--text); background: var(--bg); border: none; border-top: 0.5px solid var(--border); cursor: pointer; }
+  .save-btn:active { background: var(--border); }
+  .api-card { background: var(--surface); border-radius: var(--radius); border: 0.5px solid var(--border); padding: 14px 16px; margin-top: 12px; }
+  .api-label { font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px; }
+  .api-input { width: 100%; padding: 10px 12px; font-size: 14px; font-family: -apple-system, sans-serif; color: var(--text); background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius-sm); outline: none; }
+  .api-hint { font-size: 11px; color: var(--text-faint); margin-top: 6px; line-height: 1.4; }
+  .sync-btn { width: 100%; padding: 14px; font-size: 15px; font-weight: 600; color: var(--text); background: var(--surface); border: 0.5px solid var(--border); border-radius: var(--radius); margin-top: 12px; cursor: pointer; }
+  .sync-btn:active { background: var(--border); }
+  .sync-btn:disabled { color: var(--text-faint); }
+  .tabs-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; padding: 12px 20px 0; }
+  .tabs-wrap::-webkit-scrollbar { display: none; }
+  .tabs { display: flex; gap: 6px; width: max-content; padding-bottom: 12px; }
+  .tab { padding: 6px 14px; border-radius: 99px; font-size: 13px; font-weight: 500; border: 0.5px solid var(--border); cursor: pointer; background: var(--surface); color: var(--text-muted); white-space: nowrap; }
+  .tab.active { background: var(--text); color: var(--bg); border-color: var(--text); }
+  .count { font-size: 11px; font-weight: 400; opacity: 0.7; margin-left: 3px; }
+  .inbox { padding: 8px 20px 40px; }
+  .empty { text-align: center; padding: 48px 20px; color: var(--text-faint); font-size: 15px; }
+  .item { background: var(--surface); border-radius: var(--radius); border: 0.5px solid var(--border); padding: 14px 16px; margin-bottom: 10px; }
+  .item-top { display: flex; align-items: center; gap: 6px; margin-bottom: 8px; flex-wrap: wrap; }
+  .pill { font-size: 11px; font-weight: 600; padding: 3px 9px; border-radius: 99px; }
+  .item-time { font-size: 11px; color: var(--text-faint); margin-left: auto; }
+  .item-del { font-size: 12px; color: var(--text-faint); padding: 3px 8px; border-radius: var(--radius-sm); cursor: pointer; }
+  .item-del:active { background: var(--red-bg); color: var(--red-text); }
+  .item-text { font-size: 15px; line-height: 1.5; color: var(--text); margin-bottom: 8px; }
+  .bucket-label { font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px; margin-top: 8px; }
+  .bucket-select { display: flex; gap: 6px; flex-wrap: wrap; }
+  .bs-btn { font-size: 12px; font-weight: 500; padding: 5px 12px; border-radius: 99px; border: 0.5px solid var(--border); cursor: pointer; background: var(--bg); color: var(--text-muted); transition: all 0.1s; }
+  .bs-btn.selected { border-width: 1.5px; font-weight: 600; }
+  .bs-btn.selected.b-Daily { background: var(--daily-bg); color: var(--daily-text); border-color: var(--daily-text); }
+  .bs-btn.selected.b-Journal { background: var(--journal-bg); color: var(--journal-text); border-color: var(--journal-text); }
+  .bs-btn.selected.b-Finance { background: var(--finance-bg); color: var(--finance-text); border-color: var(--finance-text); }
+  .bs-btn.selected.b-Home { background: var(--home-bg); color: var(--home-text); border-color: var(--home-text); }
+  .bs-btn.selected.b-Agency { background: var(--agency-bg); color: var(--agency-text); border-color: var(--agency-text); }
+  .done-btn { margin-top: 10px; width: 100%; padding: 10px; font-size: 14px; font-weight: 600; color: var(--text); background: var(--bg); border: 0.5px solid var(--border-strong); border-radius: var(--radius-sm); cursor: pointer; }
+  .done-btn:active { background: var(--border); }
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>Brain Dump</h1>
+  <p>capture now, sort later</p>
+</div>
+<div class="section">
+  <div class="card">
+    <div class="mic-area">
+      <div class="mic-btn" id="micBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="9" y="2" width="6" height="11" rx="3"/>
+          <path d="M5 10a7 7 0 0014 0M12 19v3M9 22h6"/>
+        </svg>
+      </div>
+      <div class="mic-label" id="micLabel">use keyboard mic to record</div>
+    </div>
+    <div class="divider"><div class="divider-line"></div><div class="divider-text">type or dictate</div><div class="divider-line"></div></div>
+    <textarea id="dumpText" placeholder="tap mic on keyboard to speak, or type here..." rows="3"></textarea>
+    <button class="save-btn" id="saveBtn">save to inbox</button>
+  </div>
+  <div class="api-card">
+    <div class="api-label">Anthropic API key</div>
+    <input class="api-input" type="password" id="apiKey" placeholder="sk-ant-..." autocomplete="off" />
+    <div class="api-hint">needed for sync — stays on your device only</div>
+  </div>
+  <button class="sync-btn" id="syncBtn">sync + sort with Claude</button>
+</div>
+<div class="tabs-wrap">
+  <div class="tabs">
+    <div class="tab active" data-bucket="all">all <span class="count" id="c-all">0</span></div>
+    <div class="tab" data-bucket="unsorted">unsorted <span class="count" id="c-unsorted">0</span></div>
+    <div class="tab" data-bucket="Daily">daily <span class="count" id="c-Daily">0</span></div>
+    <div class="tab" data-bucket="Journal">journal <span class="count" id="c-Journal">0</span></div>
+    <div class="tab" data-bucket="Finance">finance <span class="count" id="c-Finance">0</span></div>
+    <div class="tab" data-bucket="Home with Em">home with em <span class="count" id="c-Home with Em">0</span></div>
+    <div class="tab" data-bucket="Agency">agency <span class="count" id="c-Agency">0</span></div>
+  </div>
+</div>
+<div class="inbox" id="inbox"></div>
+<script>
+const BUCKETS=['Daily','Journal','Finance','Home with Em','Agency'];
+const BCLASS={'Daily':'b-Daily','Journal':'b-Journal','Finance':'b-Finance','Home with Em':'b-Home','Agency':'b-Agency'};
+const COLORS={Daily:{bg:'var(--daily-bg)',text:'var(--daily-text)'},Journal:{bg:'var(--journal-bg)',text:'var(--journal-text)'},Finance:{bg:'var(--finance-bg)',text:'var(--finance-text)'},'Home with Em':{bg:'var(--home-bg)',text:'var(--home-text)'},Agency:{bg:'var(--agency-bg)',text:'var(--agency-text)'},unsorted:{bg:'var(--unsorted-bg)',text:'var(--unsorted-text)'}};
+let items=JSON.parse(localStorage.getItem('bd5')||'[]'),activeTab='all';
+const save=()=>localStorage.setItem('bd5',JSON.stringify(items));
+const fmtTime=ts=>{const d=new Date(ts);return d.toLocaleDateString('en-US',{month:'short',day:'numeric'})+' · '+d.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});};
+ 
+function updateCounts(){
+  document.getElementById('c-all').textContent=items.length;
+  document.getElementById('c-unsorted').textContent=items.filter(i=>!i.buckets||!i.buckets.length).length;
+  BUCKETS.forEach(b=>{const el=document.getElementById('c-'+b);if(el)el.textContent=items.filter(i=>i.buckets&&i.buckets.includes(b)).length;});
+}
+ 
+function toggleBucket(id, bucket) {
+  const item = items.find(x=>x.id===id);
+  if(!item) return;
+  if(!item.buckets) item.buckets=[];
+  if(item.buckets.includes(bucket)) {
+    item.buckets = item.buckets.filter(b=>b!==bucket);
+  } else {
+    item.buckets.push(bucket);
+  }
+  save(); render();
+}
+ 
+function render(){
+  const inbox=document.getElementById('inbox');
+  let list=activeTab==='all'?items:activeTab==='unsorted'?items.filter(i=>!i.buckets||!i.buckets.length):items.filter(i=>i.buckets&&i.buckets.includes(activeTab));
+  list=[...list].reverse();
+  if(!list.length){inbox.innerHTML='<div class="empty">nothing here yet</div>';updateCounts();return;}
+  inbox.innerHTML=list.map(item=>{
+    const buckets=item.buckets||[];
+    const pillsHtml=buckets.length?buckets.map(b=>{const c=COLORS[b];return`<span class="pill" style="background:${c.bg};color:${c.text}">${b}</span>`;}).join(''):`<span class="pill" style="background:var(--unsorted-bg);color:var(--unsorted-text)">unsorted</span>`;
+    const btnsHtml=BUCKETS.map(b=>{
+      const sel=buckets.includes(b);
+      return`<div class="bs-btn${sel?' selected '+BCLASS[b]:''}" onclick="toggleBucket('${item.id}','${b}')">${sel?'✓ ':''  }${b}</div>`;
+    }).join('');
+    return`<div class="item">
+      <div class="item-top">${pillsHtml}<span class="item-time">${fmtTime(item.ts)}</span><span class="item-del" onclick="delItem('${item.id}')">remove</span></div>
+      <div class="item-text">${item.text||'<em style="color:var(--text-faint)">voice note</em>'}</div>
+      <div class="bucket-label">assign to buckets — tap to toggle</div>
+      <div class="bucket-select">${btnsHtml}</div>
+    </div>`;
+  }).join('');
+  updateCounts();
+}
+ 
+window.delItem=id=>{items=items.filter(i=>i.id!==id);save();render();};
+window.toggleBucket=toggleBucket;
+ 
+document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>{
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+  t.classList.add('active');activeTab=t.dataset.bucket;render();
+}));
+ 
+document.getElementById('saveBtn').addEventListener('click',()=>{
+  const txt=document.getElementById('dumpText').value.trim();
+  if(!txt)return;
+  items.push({id:Date.now().toString(),ts:Date.now(),text:txt,buckets:[]});
+  save();document.getElementById('dumpText').value='';render();
+});
+ 
+document.getElementById('syncBtn').addEventListener('click',async()=>{
+  const key=document.getElementById('apiKey').value.trim();
+  if(!key){alert('add your Anthropic API key first');return;}
+  const unsorted=items.filter(i=>(!i.buckets||!i.buckets.length)&&i.text);
+  if(!unsorted.length){alert('nothing unsorted to sync');return;}
+  const btn=document.getElementById('syncBtn');
+  btn.textContent='sorting...';btn.disabled=true;
+  const prompt=`Sort Emily's brain dump notes. Each note can belong to MULTIPLE buckets if relevant.
+ 
+Buckets:
+- Daily: to-dos, scheduling, productivity, day planning
+- Journal: mood, health, feelings, doctor notes, personal reflections  
+- Finance: money, spending, income, savings, financial habits
+- Home with Em: content ideas, home decor, house projects, Instagram/Reels, brand deals, content business
+- Agency: full-time talent agency job, outreach, client thoughts, work ideas
+ 
+Return ONLY a JSON array: [{"id":"...","buckets":["Bucket1","Bucket2"]}]
+Each item can have 1 or more buckets. No markdown, no explanation.
+ 
+Notes:
+${unsorted.map(i=>`ID:${i.id} | "${i.text}"`).join('\n')}`;
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,messages:[{role:'user',content:prompt}]})});
+    const data=await res.json();
+    const sorted=JSON.parse(data.content[0].text.replace(/```json|```/g,'').trim());
+    sorted.forEach(s=>{
+      const i=items.find(x=>x.id===s.id);
+      if(i&&Array.isArray(s.buckets))i.buckets=s.buckets.filter(b=>BUCKETS.includes(b));
+    });
+    save();render();
+    btn.textContent='all sorted!';
+    setTimeout(()=>{btn.textContent='sync + sort with Claude';btn.disabled=false;},2000);
+  }catch(e){
+    btn.textContent='sync + sort with Claude';btn.disabled=false;
+    alert('sync failed — check your API key');
+  }
+});
+ 
+const savedKey=localStorage.getItem('bd_key');
+if(savedKey)document.getElementById('apiKey').value=savedKey;
+document.getElementById('apiKey').addEventListener('change',e=>localStorage.setItem('bd_key',e.target.value));
+render();updateCounts();
+</script>
+</body>
+</html>
