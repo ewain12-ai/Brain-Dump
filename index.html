@@ -1,228 +1,814 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="Brain Dump">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="theme-color" content="#0f172a" />
 <title>Brain Dump</title>
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
   :root {
-    --bg: #FAFAF8; --surface: #FFFFFF; --border: rgba(0,0,0,0.1); --border-strong: rgba(0,0,0,0.2);
-    --text: #1A1A18; --text-muted: #888780; --text-faint: #B4B2A9; --radius: 14px; --radius-sm: 8px;
-    --daily-bg: #E6F1FB; --daily-text: #0C447C; --journal-bg: #EEEDFE; --journal-text: #3C3489;
-    --finance-bg: #EAF3DE; --finance-text: #27500A; --home-bg: #FBEAF0; --home-text: #72243E;
-    --agency-bg: #FAEEDA; --agency-text: #633806; --unsorted-bg: #F1EFE8; --unsorted-text: #5F5E5A;
-    --red: #E24B4A; --red-bg: #FCEBEB; --red-text: #791F1F;
+    --bg: #0f172a;
+    --panel: #1e293b;
+    --panel-2: #334155;
+    --text: #f1f5f9;
+    --muted: #94a3b8;
+    --accent: #8b5cf6;
+    --accent-2: #a78bfa;
+    --danger: #ef4444;
+    --ok: #10b981;
+    --radius: 14px;
   }
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --bg: #1A1A18; --surface: #242422; --border: rgba(255,255,255,0.1); --border-strong: rgba(255,255,255,0.2);
-      --text: #F1EFE8; --text-muted: #888780; --text-faint: #5F5E5A;
-      --daily-bg: #042C53; --daily-text: #B5D4F4; --journal-bg: #26215C; --journal-text: #CECBF6;
-      --finance-bg: #173404; --finance-text: #C0DD97; --home-bg: #4B1528; --home-text: #F4C0D1;
-      --agency-bg: #412402; --agency-text: #FAC775; --unsorted-bg: #2C2C2A; --unsorted-text: #B4B2A9;
-      --red-bg: #501313; --red-text: #F7C1C1;
-    }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body {
+    margin: 0; padding: 0; background: var(--bg); color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-size: 16px; line-height: 1.45;
+    overscroll-behavior-y: none;
   }
-  body { font-family: -apple-system, 'SF Pro Text', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; padding-bottom: 40px; }
-  .header { padding: 56px 20px 16px; background: var(--surface); border-bottom: 0.5px solid var(--border); }
-  .header h1 { font-size: 28px; font-weight: 700; letter-spacing: -0.5px; }
-  .header p { font-size: 13px; color: var(--text-muted); margin-top: 2px; }
-  .section { padding: 16px 20px; }
-  .card { background: var(--surface); border-radius: var(--radius); border: 0.5px solid var(--border); overflow: hidden; }
-  .mic-area { display: flex; flex-direction: column; align-items: center; padding: 24px 20px 16px; }
-  .mic-btn { width: 72px; height: 72px; border-radius: 50%; background: var(--bg); border: 0.5px solid var(--border-strong); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.15s; }
-  .mic-btn svg { width: 26px; height: 26px; color: var(--text); }
-  .mic-label { font-size: 12px; color: var(--text-muted); margin-top: 10px; }
-  .divider { display: flex; align-items: center; gap: 10px; padding: 0 20px 12px; }
-  .divider-line { flex: 1; height: 0.5px; background: var(--border); }
-  .divider-text { font-size: 11px; color: var(--text-faint); text-transform: uppercase; letter-spacing: 0.08em; }
-  textarea { width: 100%; padding: 12px 20px; font-size: 16px; font-family: -apple-system, sans-serif; color: var(--text); background: transparent; border: none; border-top: 0.5px solid var(--border); resize: none; min-height: 90px; outline: none; }
-  textarea::placeholder { color: var(--text-faint); }
-  .save-btn { width: 100%; padding: 14px; font-size: 16px; font-weight: 600; color: var(--text); background: var(--bg); border: none; border-top: 0.5px solid var(--border); cursor: pointer; }
-  .save-btn:active { background: var(--border); }
-  .api-card { background: var(--surface); border-radius: var(--radius); border: 0.5px solid var(--border); padding: 14px 16px; margin-top: 12px; }
-  .api-label { font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px; }
-  .api-input { width: 100%; padding: 10px 12px; font-size: 14px; font-family: -apple-system, sans-serif; color: var(--text); background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius-sm); outline: none; }
-  .api-hint { font-size: 11px; color: var(--text-faint); margin-top: 6px; line-height: 1.4; }
-  .sync-btn { width: 100%; padding: 14px; font-size: 15px; font-weight: 600; color: var(--text); background: var(--surface); border: 0.5px solid var(--border); border-radius: var(--radius); margin-top: 12px; cursor: pointer; }
-  .sync-btn:active { background: var(--border); }
-  .sync-btn:disabled { color: var(--text-faint); }
-  .tabs-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; padding: 12px 20px 0; }
-  .tabs-wrap::-webkit-scrollbar { display: none; }
-  .tabs { display: flex; gap: 6px; width: max-content; padding-bottom: 12px; }
-  .tab { padding: 6px 14px; border-radius: 99px; font-size: 13px; font-weight: 500; border: 0.5px solid var(--border); cursor: pointer; background: var(--surface); color: var(--text-muted); white-space: nowrap; }
-  .tab.active { background: var(--text); color: var(--bg); border-color: var(--text); }
-  .count { font-size: 11px; font-weight: 400; opacity: 0.7; margin-left: 3px; }
-  .inbox { padding: 8px 20px 40px; }
-  .empty { text-align: center; padding: 48px 20px; color: var(--text-faint); font-size: 15px; }
-  .item { background: var(--surface); border-radius: var(--radius); border: 0.5px solid var(--border); padding: 14px 16px; margin-bottom: 10px; }
-  .item-top { display: flex; align-items: center; gap: 6px; margin-bottom: 8px; flex-wrap: wrap; }
-  .pill { font-size: 11px; font-weight: 600; padding: 3px 9px; border-radius: 99px; }
-  .item-time { font-size: 11px; color: var(--text-faint); margin-left: auto; }
-  .item-del { font-size: 12px; color: var(--text-faint); padding: 3px 8px; border-radius: var(--radius-sm); cursor: pointer; }
-  .item-del:active { background: var(--red-bg); color: var(--red-text); }
-  .item-text { font-size: 15px; line-height: 1.5; color: var(--text); margin-bottom: 8px; }
-  .bucket-label { font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px; margin-top: 8px; }
-  .bucket-select { display: flex; gap: 6px; flex-wrap: wrap; }
-  .bs-btn { font-size: 12px; font-weight: 500; padding: 5px 12px; border-radius: 99px; border: 0.5px solid var(--border); cursor: pointer; background: var(--bg); color: var(--text-muted); transition: all 0.1s; }
-  .bs-btn.selected { border-width: 1.5px; font-weight: 600; }
-  .bs-btn.selected.b-Daily { background: var(--daily-bg); color: var(--daily-text); border-color: var(--daily-text); }
-  .bs-btn.selected.b-Journal { background: var(--journal-bg); color: var(--journal-text); border-color: var(--journal-text); }
-  .bs-btn.selected.b-Finance { background: var(--finance-bg); color: var(--finance-text); border-color: var(--finance-text); }
-  .bs-btn.selected.b-Home { background: var(--home-bg); color: var(--home-text); border-color: var(--home-text); }
-  .bs-btn.selected.b-Agency { background: var(--agency-bg); color: var(--agency-text); border-color: var(--agency-text); }
-  .done-btn { margin-top: 10px; width: 100%; padding: 10px; font-size: 14px; font-weight: 600; color: var(--text); background: var(--bg); border: 0.5px solid var(--border-strong); border-radius: var(--radius-sm); cursor: pointer; }
-  .done-btn:active { background: var(--border); }
+  header {
+    position: sticky; top: 0; z-index: 10;
+    background: rgba(15, 23, 42, 0.95);
+    backdrop-filter: blur(8px);
+    padding: 14px 16px 10px;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  h1 {
+    margin: 0; font-size: 20px; font-weight: 700;
+    display: flex; align-items: center; gap: 8px;
+  }
+  h1 .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--accent); }
+  .sub { color: var(--muted); font-size: 13px; margin-top: 2px; }
+  main { padding: 14px 16px 120px; max-width: 720px; margin: 0 auto; }
+  .card {
+    background: var(--panel); border-radius: var(--radius);
+    padding: 14px; margin-bottom: 14px;
+    border: 1px solid rgba(255,255,255,0.04);
+  }
+  textarea {
+    width: 100%; min-height: 80px; resize: vertical;
+    background: var(--panel-2); color: var(--text);
+    border: 1px solid rgba(255,255,255,0.08); border-radius: 10px;
+    padding: 12px; font-size: 16px; font-family: inherit;
+    outline: none;
+  }
+  textarea:focus { border-color: var(--accent); }
+  .row { display: flex; gap: 8px; flex-wrap: wrap; }
+  button {
+    flex: 1 1 auto; min-height: 48px;
+    background: var(--accent); color: white; border: none;
+    border-radius: 10px; font-size: 15px; font-weight: 600;
+    padding: 0 14px; cursor: pointer; touch-action: manipulation;
+    transition: background 0.15s, transform 0.05s;
+  }
+  button:active { transform: scale(0.98); }
+  button:hover { background: var(--accent-2); }
+  button.secondary { background: var(--panel-2); color: var(--text); }
+  button.secondary:hover { background: #475569; }
+  button.danger { background: var(--danger); }
+  button:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  /* Voice-first primary input */
+  .talk-btn {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    width: 100%; height: 120px;
+    background: var(--accent); color: white;
+    border-radius: 16px; border: none;
+    font-size: 16px; font-weight: 600;
+    gap: 6px;
+    margin-bottom: 10px;
+  }
+  .talk-btn .mic-icon { font-size: 38px; line-height: 1; }
+  .talk-btn .label { font-size: 15px; opacity: 0.95; }
+  .talk-btn.recording {
+    background: var(--danger);
+    animation: pulse 1.2s infinite;
+  }
+  .talk-btn.recording .label::after { content: " (tap to stop)"; }
+  @keyframes pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.55); }
+    50% { box-shadow: 0 0 0 14px rgba(239, 68, 68, 0); }
+  }
+  .or {
+    text-align: center; color: var(--muted);
+    font-size: 12px; margin: 6px 0 8px; text-transform: uppercase; letter-spacing: 1px;
+  }
+
+  .status {
+    font-size: 13px; color: var(--muted); margin-top: 8px; min-height: 18px;
+    white-space: pre-wrap;
+  }
+  .status.ok { color: var(--ok); }
+  .status.err { color: var(--danger); }
+  .bucket {
+    background: var(--panel); border-radius: var(--radius);
+    margin-bottom: 10px; overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.04);
+  }
+  .bucket-head {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 14px; cursor: pointer; user-select: none;
+  }
+  .bucket-title { font-weight: 600; display: flex; align-items: center; gap: 10px; }
+  .bucket-title .emoji { font-size: 18px; }
+  .count {
+    background: var(--panel-2); color: var(--muted);
+    font-size: 12px; padding: 2px 8px; border-radius: 10px;
+  }
+  .count.unsorted { background: var(--accent); color: white; }
+  .bucket-body { display: none; padding: 0 14px 12px; }
+  .bucket.open .bucket-body { display: block; }
+  .bucket.open .chev { transform: rotate(90deg); }
+  .chev { transition: transform 0.15s; color: var(--muted); }
+  .bucket-actions {
+    display: flex; gap: 6px; padding: 6px 0 10px;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    margin-bottom: 10px;
+  }
+  .bucket-actions button {
+    min-height: 36px; font-size: 13px; padding: 0 10px;
+  }
+  .note {
+    background: var(--panel-2); border-radius: 8px;
+    padding: 10px 12px; margin-bottom: 8px;
+    position: relative; font-size: 15px;
+    word-wrap: break-word;
+  }
+  .note-meta {
+    font-size: 11px; color: var(--muted);
+    margin-top: 6px; display: flex; gap: 10px; align-items: center;
+  }
+  .note-del {
+    background: transparent; color: var(--muted); border: none;
+    padding: 2px 6px; font-size: 12px; min-height: 0; flex: 0 0 auto;
+  }
+  .note-del:hover { color: var(--danger); background: transparent; }
+  .empty { color: var(--muted); font-size: 13px; padding: 6px 0; font-style: italic; }
+  .settings {
+    margin-top: 18px; padding-top: 14px;
+    border-top: 1px solid rgba(255,255,255,0.06);
+  }
+  .settings summary {
+    color: var(--muted); cursor: pointer; font-size: 14px;
+    list-style: none; padding: 4px 0;
+  }
+  .settings summary::-webkit-details-marker { display: none; }
+  .settings input {
+    width: 100%; padding: 10px 12px; margin-top: 8px;
+    background: var(--panel-2); color: var(--text);
+    border: 1px solid rgba(255,255,255,0.08); border-radius: 8px;
+    font-size: 14px;
+  }
+  .settings input.mono { font-family: monospace; font-size: 13px; }
+  .settings .hint {
+    color: var(--muted); font-size: 12px; margin-top: 6px;
+  }
+  .settings .hint a { color: var(--accent-2); }
+
+  .bucket-edit-list { margin-top: 6px; }
+  .bucket-edit-row {
+    display: flex; align-items: center; gap: 8px;
+    padding: 8px 10px; background: var(--panel-2);
+    border-radius: 8px; margin-bottom: 6px;
+    font-size: 14px;
+  }
+  .bucket-edit-row .emoji { font-size: 18px; }
+  .bucket-edit-row .name { flex: 1; }
+  .bucket-edit-row .del {
+    background: transparent; color: var(--muted); border: none;
+    padding: 4px 8px; font-size: 12px; min-height: 0;
+  }
+  .bucket-edit-row .del:hover { color: var(--danger); }
+  .bucket-edit-row .builtin {
+    font-size: 11px; color: var(--muted); font-style: italic;
+  }
+  .bucket-add {
+    display: grid; grid-template-columns: 60px 1fr; gap: 6px; margin-top: 8px;
+  }
+  .bucket-add input { margin-top: 0; }
+  .bucket-add .desc { grid-column: 1 / -1; }
+  .settings-section { margin-top: 14px; }
+  .settings-section-title {
+    font-size: 13px; font-weight: 600; color: var(--text);
+    margin-bottom: 6px;
+  }
 </style>
 </head>
 <body>
-<div class="header">
-  <h1>Brain Dump</h1>
-  <p>capture now, sort later</p>
-</div>
-<div class="section">
+<header>
+  <h1><span class="dot"></span> Brain Dump</h1>
+  <div class="sub">Capture now, sort later.</div>
+</header>
+
+<main>
   <div class="card">
-    <div class="mic-area">
-      <div class="mic-btn" id="micBtn">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-          <rect x="9" y="2" width="6" height="11" rx="3"/>
-          <path d="M5 10a7 7 0 0014 0M12 19v3M9 22h6"/>
-        </svg>
-      </div>
-      <div class="mic-label" id="micLabel">use keyboard mic to record</div>
+    <button id="talkBtn" class="talk-btn" aria-label="Tap to talk">
+      <span class="mic-icon">🎤</span>
+      <span class="label">Tap to talk</span>
+    </button>
+    <div class="or">or type</div>
+    <textarea id="input" placeholder="Type a thought..."></textarea>
+    <div class="row" style="margin-top: 10px;">
+      <button id="saveBtn">Save note</button>
     </div>
-    <div class="divider"><div class="divider-line"></div><div class="divider-text">type or dictate</div><div class="divider-line"></div></div>
-    <textarea id="dumpText" placeholder="tap mic on keyboard to speak, or type here..." rows="3"></textarea>
-    <button class="save-btn" id="saveBtn">save to inbox</button>
+    <div class="row" style="margin-top: 8px;">
+      <button id="syncBtn" class="secondary">⚡ AI sync</button>
+      <button id="offlineBtn" class="secondary">📦 Offline sort</button>
+    </div>
+    <div id="status" class="status"></div>
   </div>
-  <div class="api-card">
-    <div class="api-label">Anthropic API key</div>
-    <input class="api-input" type="password" id="apiKey" placeholder="sk-ant-..." autocomplete="off" />
-    <div class="api-hint">needed for sync — stays on your device only</div>
-  </div>
-  <button class="sync-btn" id="syncBtn">sync + sort with Claude</button>
-</div>
-<div class="tabs-wrap">
-  <div class="tabs">
-    <div class="tab active" data-bucket="all">all <span class="count" id="c-all">0</span></div>
-    <div class="tab" data-bucket="unsorted">unsorted <span class="count" id="c-unsorted">0</span></div>
-    <div class="tab" data-bucket="Daily">daily <span class="count" id="c-Daily">0</span></div>
-    <div class="tab" data-bucket="Journal">journal <span class="count" id="c-Journal">0</span></div>
-    <div class="tab" data-bucket="Finance">finance <span class="count" id="c-Finance">0</span></div>
-    <div class="tab" data-bucket="Home with Em">home with em <span class="count" id="c-Home with Em">0</span></div>
-    <div class="tab" data-bucket="Agency">agency <span class="count" id="c-Agency">0</span></div>
-  </div>
-</div>
-<div class="inbox" id="inbox"></div>
+
+  <div id="buckets"></div>
+
+  <details class="settings">
+    <summary>⚙️ Settings</summary>
+
+    <div class="settings-section">
+      <div class="settings-section-title">Buckets</div>
+      <div id="bucketEditList" class="bucket-edit-list"></div>
+      <div class="bucket-add">
+        <input id="newBucketEmoji" placeholder="📌" maxlength="4" />
+        <input id="newBucketName" placeholder="Bucket name (e.g. Fitness)" maxlength="30" />
+        <input id="newBucketDesc" class="desc" placeholder="Short description for AI (e.g. gym, workouts, health)" maxlength="120" />
+      </div>
+      <button id="addBucketBtn" class="secondary" style="margin-top: 8px;">+ Add bucket</button>
+    </div>
+
+    <div class="settings-section">
+      <div class="settings-section-title">Anthropic API key</div>
+      <input id="apiKey" class="mono" type="password" placeholder="sk-ant-api03-..." autocomplete="off" />
+      <div class="hint">
+        Stored only on this device. Get one at
+        <a href="https://console.anthropic.com/settings/keys" target="_blank" rel="noopener">console.anthropic.com</a>.
+      </div>
+      <div class="row" style="margin-top: 10px;">
+        <button id="saveKeyBtn" class="secondary">Save key</button>
+        <button id="testKeyBtn" class="secondary">🔍 Test key</button>
+      </div>
+    </div>
+
+    <div class="settings-section">
+      <div class="settings-section-title">Data</div>
+      <div class="row">
+        <button id="exportBtn" class="secondary">Export all notes</button>
+        <button id="clearBtn" class="danger">Clear everything</button>
+      </div>
+    </div>
+  </details>
+</main>
+
 <script>
-const BUCKETS=['Daily','Journal','Finance','Home with Em','Agency'];
-const BCLASS={'Daily':'b-Daily','Journal':'b-Journal','Finance':'b-Finance','Home with Em':'b-Home','Agency':'b-Agency'};
-const COLORS={Daily:{bg:'var(--daily-bg)',text:'var(--daily-text)'},Journal:{bg:'var(--journal-bg)',text:'var(--journal-text)'},Finance:{bg:'var(--finance-bg)',text:'var(--finance-text)'},'Home with Em':{bg:'var(--home-bg)',text:'var(--home-text)'},Agency:{bg:'var(--agency-bg)',text:'var(--agency-text)'},unsorted:{bg:'var(--unsorted-bg)',text:'var(--unsorted-text)'}};
-let items=JSON.parse(localStorage.getItem('bd5')||'[]'),activeTab='all';
-const save=()=>localStorage.setItem('bd5',JSON.stringify(items));
-const fmtTime=ts=>{const d=new Date(ts);return d.toLocaleDateString('en-US',{month:'short',day:'numeric'})+' · '+d.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});};
- 
-function updateCounts(){
-  document.getElementById('c-all').textContent=items.length;
-  document.getElementById('c-unsorted').textContent=items.filter(i=>!i.buckets||!i.buckets.length).length;
-  BUCKETS.forEach(b=>{const el=document.getElementById('c-'+b);if(el)el.textContent=items.filter(i=>i.buckets&&i.buckets.includes(b)).length;});
-}
- 
-function toggleBucket(id, bucket) {
-  const item = items.find(x=>x.id===id);
-  if(!item) return;
-  if(!item.buckets) item.buckets=[];
-  if(item.buckets.includes(bucket)) {
-    item.buckets = item.buckets.filter(b=>b!==bucket);
-  } else {
-    item.buckets.push(bucket);
-  }
-  save(); render();
-}
- 
-function render(){
-  const inbox=document.getElementById('inbox');
-  let list=activeTab==='all'?items:activeTab==='unsorted'?items.filter(i=>!i.buckets||!i.buckets.length):items.filter(i=>i.buckets&&i.buckets.includes(activeTab));
-  list=[...list].reverse();
-  if(!list.length){inbox.innerHTML='<div class="empty">nothing here yet</div>';updateCounts();return;}
-  inbox.innerHTML=list.map(item=>{
-    const buckets=item.buckets||[];
-    const pillsHtml=buckets.length?buckets.map(b=>{const c=COLORS[b];return`<span class="pill" style="background:${c.bg};color:${c.text}">${b}</span>`;}).join(''):`<span class="pill" style="background:var(--unsorted-bg);color:var(--unsorted-text)">unsorted</span>`;
-    const btnsHtml=BUCKETS.map(b=>{
-      const sel=buckets.includes(b);
-      return`<div class="bs-btn${sel?' selected '+BCLASS[b]:''}" onclick="toggleBucket('${item.id}','${b}')">${sel?'✓ ':''  }${b}</div>`;
-    }).join('');
-    return`<div class="item">
-      <div class="item-top">${pillsHtml}<span class="item-time">${fmtTime(item.ts)}</span><span class="item-del" onclick="delItem('${item.id}')">remove</span></div>
-      <div class="item-text">${item.text||'<em style="color:var(--text-faint)">voice note</em>'}</div>
-      <div class="bucket-label">assign to buckets — tap to toggle</div>
-      <div class="bucket-select">${btnsHtml}</div>
-    </div>`;
-  }).join('');
-  updateCounts();
-}
- 
-window.delItem=id=>{items=items.filter(i=>i.id!==id);save();render();};
-window.toggleBucket=toggleBucket;
- 
-document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>{
-  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
-  t.classList.add('active');activeTab=t.dataset.bucket;render();
-}));
- 
-document.getElementById('saveBtn').addEventListener('click',()=>{
-  const txt=document.getElementById('dumpText').value.trim();
-  if(!txt)return;
-  items.push({id:Date.now().toString(),ts:Date.now(),text:txt,buckets:[]});
-  save();document.getElementById('dumpText').value='';render();
-});
- 
-document.getElementById('syncBtn').addEventListener('click',async()=>{
-  const key=document.getElementById('apiKey').value.trim();
-  if(!key){alert('add your Anthropic API key first');return;}
-  const unsorted=items.filter(i=>(!i.buckets||!i.buckets.length)&&i.text);
-  if(!unsorted.length){alert('nothing unsorted to sync');return;}
-  const btn=document.getElementById('syncBtn');
-  btn.textContent='sorting...';btn.disabled=true;
-  const prompt=`Sort Emily's brain dump notes. Each note can belong to MULTIPLE buckets if relevant.
- 
-Buckets:
-- Daily: to-dos, scheduling, productivity, day planning
-- Journal: mood, health, feelings, doctor notes, personal reflections  
-- Finance: money, spending, income, savings, financial habits
-- Home with Em: content ideas, home decor, house projects, Instagram/Reels, brand deals, content business
-- Agency: full-time talent agency job, outreach, client thoughts, work ideas
- 
-Return ONLY a JSON array: [{"id":"...","buckets":["Bucket1","Bucket2"]}]
-Each item can have 1 or more buckets. No markdown, no explanation.
- 
-Notes:
-${unsorted.map(i=>`ID:${i.id} | "${i.text}"`).join('\n')}`;
-  try{
-    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,messages:[{role:'user',content:prompt}]})});
-    const data=await res.json();
-    const sorted=JSON.parse(data.content[0].text.replace(/```json|```/g,'').trim());
-    sorted.forEach(s=>{
-      const i=items.find(x=>x.id===s.id);
-      if(i&&Array.isArray(s.buckets))i.buckets=s.buckets.filter(b=>BUCKETS.includes(b));
+(() => {
+  // ---------- keys ----------
+  const KEY_NOTES   = "brainDump.notes.v1";
+  const KEY_API     = "brainDump.apiKey.v1";
+  const KEY_OPEN    = "brainDump.openBuckets.v1";
+  const KEY_BUCKETS = "brainDump.buckets.v2";
+
+  // ---------- default buckets ----------
+  const UNSORTED = { id: "unsorted", name: "Unsorted", emoji: "🗒️", builtIn: true, description: "Notes not yet sorted." };
+  const DEFAULT_SORTABLE = [
+    { id: "daily",   name: "Daily",        emoji: "☀️", builtIn: true, description: "Day-to-day todos, errands, quick reminders, appointments." },
+    { id: "journal", name: "Journal",      emoji: "📔", builtIn: true, description: "Feelings, reflections, personal thoughts, gratitude, dreams." },
+    { id: "finance", name: "Finance",      emoji: "💰", builtIn: true, description: "Money, bills, expenses, income, budgeting, investments, purchases." },
+    { id: "home",    name: "Home with Em", emoji: "🏡", builtIn: true, description: "Anything involving 'Em' (partner), household tasks, shared domestic life, relationship notes." },
+    { id: "agency",  name: "Agency",       emoji: "💼", builtIn: true, description: "Business, work, clients, marketing, projects at the user's agency." },
+  ];
+
+  const $ = sel => document.querySelector(sel);
+  const input = $("#input");
+  const status = $("#status");
+  const bucketsEl = $("#buckets");
+  const apiKeyInput = $("#apiKey");
+
+  // ---------- storage ----------
+  const loadJSON = (k, fallback) => {
+    try { return JSON.parse(localStorage.getItem(k)) ?? fallback; }
+    catch { return fallback; }
+  };
+  const saveJSON = (k, v) => localStorage.setItem(k, JSON.stringify(v));
+  const loadKey = () => localStorage.getItem(KEY_API) || "";
+  const saveKey = (k) => localStorage.setItem(KEY_API, k);
+
+  let notes = loadJSON(KEY_NOTES, []);
+  let openSet = new Set(loadJSON(KEY_OPEN, []));
+  let sortableBuckets = loadJSON(KEY_BUCKETS, DEFAULT_SORTABLE);
+  // migrate any old buckets missing description
+  sortableBuckets = sortableBuckets.map(b => ({ ...b, description: b.description || b.name }));
+  saveJSON(KEY_BUCKETS, sortableBuckets);
+
+  const allBuckets = () => [UNSORTED, ...sortableBuckets];
+  const sortableIds = () => sortableBuckets.map(b => b.id);
+
+  apiKeyInput.value = loadKey();
+
+  // ---------- utils ----------
+  const fmtTime = (ts) => {
+    const d = new Date(ts);
+    const now = new Date();
+    const sameDay = d.toDateString() === now.toDateString();
+    if (sameDay) return d.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
+    return d.toLocaleDateString([], { month: "short", day: "numeric" }) +
+           " " + d.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
+  };
+  const escapeHtml = (s) => s
+    .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;").replace(/'/g, "&#039;").replace(/\n/g, "<br>");
+  const setStatus = (msg, kind = "") => {
+    status.textContent = msg;
+    status.className = "status " + kind;
+  };
+  const slugify = (s) => s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 24) || ("b" + Date.now());
+  const uuid = () => crypto.randomUUID ? crypto.randomUUID() : String(Date.now() + Math.random());
+
+  // ---------- render buckets ----------
+  const render = () => {
+    const grouped = {};
+    allBuckets().forEach(b => grouped[b.id] = []);
+    notes.forEach(n => {
+      const targetId = grouped[n.bucket] ? n.bucket : "unsorted";
+      grouped[targetId].push(n);
     });
-    save();render();
-    btn.textContent='all sorted!';
-    setTimeout(()=>{btn.textContent='sync + sort with Claude';btn.disabled=false;},2000);
-  }catch(e){
-    btn.textContent='sync + sort with Claude';btn.disabled=false;
-    alert('sync failed — check your API key');
+
+    bucketsEl.innerHTML = allBuckets().map(b => {
+      const items = grouped[b.id].sort((a, z) => z.ts - a.ts);
+      const count = items.length;
+      const isUnsorted = b.id === "unsorted";
+      const isOpen = openSet.has(b.id) || (isUnsorted && count > 0);
+      return `
+        <div class="bucket ${isOpen ? "open" : ""}" data-id="${b.id}">
+          <div class="bucket-head">
+            <div class="bucket-title">
+              <span class="emoji">${b.emoji}</span>
+              <span>${escapeHtml(b.name)}</span>
+            </div>
+            <div style="display:flex; gap:8px; align-items:center;">
+              <span class="count ${isUnsorted && count > 0 ? "unsorted" : ""}">${count}</span>
+              <span class="chev">›</span>
+            </div>
+          </div>
+          <div class="bucket-body">
+            ${count > 0 && !isUnsorted ? `
+              <div class="bucket-actions">
+                <button class="secondary" data-copy="${b.id}">📋 Copy</button>
+                <button class="secondary" data-clear="${b.id}">✓ Mark synced</button>
+              </div>
+            ` : ""}
+            ${items.length === 0
+              ? `<div class="empty">No notes yet.</div>`
+              : items.map(n => `
+                  <div class="note" data-note-id="${n.id}">
+                    ${escapeHtml(n.text)}
+                    <div class="note-meta">
+                      <span>${fmtTime(n.ts)}</span>
+                      ${n.source === "voice" ? "<span>🎤 voice</span>" : ""}
+                      ${n.autoSorted ? "<span>✨ auto-sorted</span>" : ""}
+                      <span style="flex:1;"></span>
+                      <button class="note-del" data-del="${n.id}">delete</button>
+                    </div>
+                  </div>
+                `).join("")
+            }
+          </div>
+        </div>
+      `;
+    }).join("");
+
+    // head toggles
+    bucketsEl.querySelectorAll(".bucket-head").forEach(h => {
+      h.addEventListener("click", () => {
+        const id = h.parentElement.getAttribute("data-id");
+        if (openSet.has(id)) openSet.delete(id); else openSet.add(id);
+        saveJSON(KEY_OPEN, [...openSet]);
+        h.parentElement.classList.toggle("open");
+      });
+    });
+    // copy buttons
+    bucketsEl.querySelectorAll("[data-copy]").forEach(btn => {
+      btn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        const id = btn.getAttribute("data-copy");
+        copyBucket(id);
+      });
+    });
+    // clear buttons
+    bucketsEl.querySelectorAll("[data-clear]").forEach(btn => {
+      btn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        const id = btn.getAttribute("data-clear");
+        clearBucket(id);
+      });
+    });
+    // note delete
+    bucketsEl.querySelectorAll("[data-del]").forEach(btn => {
+      btn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        const id = btn.getAttribute("data-del");
+        notes = notes.filter(n => n.id !== id);
+        saveJSON(KEY_NOTES, notes);
+        render();
+      });
+    });
+  };
+
+  // ---------- copy / clear bucket ----------
+  const formatBucketForClaude = (bucketId) => {
+    const b = allBuckets().find(x => x.id === bucketId);
+    const items = notes.filter(n => n.bucket === bucketId).sort((a, z) => a.ts - z.ts);
+    if (items.length === 0) return "";
+    const header = `Here's what I've been thinking about on ${b.name} since we last talked:\n`;
+    const body = items.map(n => `- ${n.text.replace(/\n/g, " ")}`).join("\n");
+    return header + "\n" + body;
+  };
+
+  const copyBucket = async (bucketId) => {
+    const text = formatBucketForClaude(bucketId);
+    if (!text) { setStatus("Nothing to copy.", "err"); return; }
+    try {
+      await navigator.clipboard.writeText(text);
+      setStatus(`Copied to clipboard. Paste it into Claude, then tap 'Mark synced' to clear.`, "ok");
+    } catch (err) {
+      // fallback: show text in a prompt so user can manually copy
+      try {
+        const ta = document.createElement("textarea");
+        ta.value = text; document.body.appendChild(ta);
+        ta.select(); document.execCommand("copy");
+        document.body.removeChild(ta);
+        setStatus(`Copied. Paste into Claude, then tap 'Mark synced' to clear.`, "ok");
+      } catch {
+        setStatus("Couldn't auto-copy. Long-press the notes to copy manually.", "err");
+      }
+    }
+  };
+
+  const clearBucket = (bucketId) => {
+    const count = notes.filter(n => n.bucket === bucketId).length;
+    if (count === 0) { setStatus("Bucket is already empty.", "ok"); return; }
+    if (!confirm(`Clear ${count} note(s) from this bucket? (Export first if you want a backup.)`)) return;
+    notes = notes.filter(n => n.bucket !== bucketId);
+    saveJSON(KEY_NOTES, notes);
+    render();
+    setStatus(`Cleared ${count} note(s). ✓`, "ok");
+  };
+
+  // ---------- save note ----------
+  const saveNote = (text, source = "text") => {
+    const clean = (text || "").trim();
+    if (!clean) return false;
+    notes.push({
+      id: uuid(),
+      text: clean, ts: Date.now(),
+      bucket: "unsorted", source, autoSorted: false,
+    });
+    saveJSON(KEY_NOTES, notes);
+    return true;
+  };
+
+  $("#saveBtn").addEventListener("click", () => {
+    if (saveNote(input.value, "text")) {
+      input.value = "";
+      setStatus("Saved. Hit AI sync or Offline sort to organize.", "ok");
+      render();
+    } else {
+      setStatus("Nothing to save.", "err");
+    }
+  });
+
+  // ---------- voice (primary) ----------
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  const talkBtn = $("#talkBtn");
+  let recognition = null, recording = false, finalText = "";
+
+  if (!SR) {
+    talkBtn.disabled = true;
+    talkBtn.querySelector(".label").textContent = "Voice not supported in this browser";
+  } else {
+    recognition = new SR();
+    recognition.continuous = true;
+    recognition.interimResults = true;
+    recognition.lang = "en-US";
+
+    recognition.onresult = (e) => {
+      let interim = "";
+      for (let i = e.resultIndex; i < e.results.length; i++) {
+        const t = e.results[i][0].transcript;
+        if (e.results[i].isFinal) finalText += t + " ";
+        else interim += t;
+      }
+      // live preview in the textarea while talking
+      input.value = (finalText + interim).trim();
+    };
+    recognition.onerror = (e) => {
+      setStatus("Voice error: " + e.error, "err");
+      stopRec();
+    };
+    recognition.onend = () => {
+      if (recording) {
+        const captured = (finalText + input.value.replace(finalText, "")).trim();
+        // use whatever is now in the textarea
+        const toSave = input.value.trim();
+        if (toSave) {
+          saveNote(toSave, "voice");
+          input.value = "";
+          setStatus("Voice memo saved. Hit AI sync or Offline sort to organize.", "ok");
+          render();
+        }
+      }
+      recording = false;
+      talkBtn.classList.remove("recording");
+      finalText = "";
+    };
+    const stopRec = () => {
+      try { recognition.stop(); } catch(e){}
+      recording = false;
+      talkBtn.classList.remove("recording");
+    };
+    talkBtn.addEventListener("click", () => {
+      if (recording) { stopRec(); return; }
+      finalText = "";
+      input.value = "";
+      try {
+        recognition.start();
+        recording = true;
+        talkBtn.classList.add("recording");
+        setStatus("Listening... tap the button again to stop & save.", "");
+      } catch (err) {
+        setStatus("Couldn't start mic: " + err.message, "err");
+      }
+    });
   }
-});
- 
-const savedKey=localStorage.getItem('bd_key');
-if(savedKey)document.getElementById('apiKey').value=savedKey;
-document.getElementById('apiKey').addEventListener('change',e=>localStorage.setItem('bd_key',e.target.value));
-render();updateCounts();
+
+  // ---------- AI sync ----------
+  const buildPrompt = (unsorted) => {
+    const bucketLines = sortableBuckets
+      .map(b => `- ${b.id}: ${b.description || b.name}`).join("\n");
+    const list = unsorted.map((n, i) => `${i + 1}. ${n.text.replace(/\n/g, " ")}`).join("\n");
+    return `You are sorting short personal notes into exactly one of these buckets:
+
+${bucketLines}
+
+Rules:
+- Pick exactly one bucket id per note.
+- Choose the best fit based on each bucket's description.
+- If nothing fits well, pick the closest match (prefer "daily" or the first listed bucket).
+
+Notes to sort:
+${list}
+
+Reply with ONLY a JSON array of bucket ids in the same order as the numbered notes above. No prose, no code fences. Example: ["${sortableBuckets[0]?.id || "daily"}","${sortableBuckets[1]?.id || "journal"}"]`;
+  };
+
+  const callAnthropic = async (apiKey, prompt) => {
+    const res = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": apiKey,
+        "anthropic-version": "2023-06-01",
+        "anthropic-dangerous-direct-browser-access": "true",
+      },
+      body: JSON.stringify({
+        model: "claude-haiku-4-5-20251001",
+        max_tokens: 1024,
+        messages: [{ role: "user", content: prompt }],
+      }),
+    });
+    if (!res.ok) {
+      let detail = "";
+      try { detail = JSON.stringify(await res.json()); } catch { detail = await res.text(); }
+      throw new Error(`HTTP ${res.status}: ${detail}`);
+    }
+    const data = await res.json();
+    const text = (data.content || []).map(c => c.text || "").join("").trim();
+    const match = text.match(/\[[\s\S]*\]/);
+    if (!match) throw new Error("Couldn't parse response: " + text.slice(0, 200));
+    const arr = JSON.parse(match[0]);
+    if (!Array.isArray(arr)) throw new Error("Response wasn't an array");
+    return arr;
+  };
+
+  $("#syncBtn").addEventListener("click", async () => {
+    const key = loadKey();
+    if (!key) { setStatus("Add your API key in Settings first.", "err"); return; }
+    const unsorted = notes.filter(n => n.bucket === "unsorted");
+    if (unsorted.length === 0) { setStatus("Nothing to sync — all notes sorted.", "ok"); return; }
+    setStatus(`Syncing ${unsorted.length} note(s)...`);
+    $("#syncBtn").disabled = true;
+    try {
+      const prompt = buildPrompt(unsorted);
+      const buckets = await callAnthropic(key, prompt);
+      const validIds = sortableIds();
+      let applied = 0;
+      unsorted.forEach((n, i) => {
+        const b = buckets[i];
+        if (b && validIds.includes(b)) {
+          n.bucket = b; n.autoSorted = true; applied++;
+        }
+      });
+      saveJSON(KEY_NOTES, notes);
+      render();
+      setStatus(`Sorted ${applied} of ${unsorted.length} notes. ✨`, "ok");
+    } catch (err) {
+      console.error(err);
+      let friendly = err.message;
+      if (/401|invalid.*api.*key|authentication/i.test(friendly)) {
+        friendly = "API key rejected. Tap 'Test key' in Settings for details.";
+      } else if (/credit|billing|insufficient/i.test(friendly)) {
+        friendly = "Your Anthropic account is out of credit.";
+      } else if (/CORS|Failed to fetch|NetworkError/i.test(friendly)) {
+        friendly = "Network blocked the request.";
+      } else if (/429|rate/i.test(friendly)) {
+        friendly = "Rate limited — wait a minute and retry.";
+      }
+      setStatus("Sync failed: " + friendly, "err");
+    } finally {
+      $("#syncBtn").disabled = false;
+    }
+  });
+
+  // ---------- offline keyword sort ----------
+  const BUILT_IN_RULES = {
+    home:    /\b(em|em's|emily|partner|our (house|home|apartment)|together|date night|groceries|dinner|laundry|cleaning|pets?|dog|cat)\b/i,
+    finance: /\b(\$|usd|rent|mortgage|bill|bills|invoice|paid|pay|owe|owes|budget|savings|income|expense|expenses|tax|taxes|credit card|bank|investment|stock|stocks|venmo|zelle|cash|refund|subscription)\b/i,
+    agency:  /\b(client|clients|meeting|deck|pitch|proposal|agency|campaign|brief|deadline|launch|deliverable|stakeholder|kpi|roi|marketing|ad|ads|sow|contract|onboarding)\b/i,
+    journal: /\b(feel|feeling|felt|anxious|grateful|gratitude|dream|dreamt|proud|sad|happy|frustrated|reflect|reflection|realize|realized|i think|i believe|lonely|excited|overwhelmed)\b/i,
+    daily:   /\b(todo|to-do|tomorrow|today|pick up|drop off|errand|remind|reminder|appt|appointment|call|email|pay|buy|schedule|book|reschedule)\b/i,
+  };
+  const customRule = (bucket) => {
+    // build a loose regex from the bucket's description keywords
+    const words = (bucket.description || bucket.name)
+      .toLowerCase()
+      .split(/[,;\s]+/)
+      .filter(w => w.length >= 3 && !/^(the|and|for|with|into|from|this|that|your|you)$/.test(w))
+      .slice(0, 12)
+      .map(w => w.replace(/[^a-z0-9']/g, ""))
+      .filter(Boolean);
+    if (words.length === 0) return null;
+    return new RegExp("\\b(" + words.join("|") + ")\\b", "i");
+  };
+
+  const keywordSort = (text) => {
+    // check each sortable bucket in order; built-ins use tuned rules, customs use description
+    for (const b of sortableBuckets) {
+      const rule = BUILT_IN_RULES[b.id] || customRule(b);
+      if (rule && rule.test(text)) return b.id;
+    }
+    return sortableBuckets.find(b => b.id === "daily")?.id
+        || sortableBuckets[0]?.id
+        || "unsorted";
+  };
+
+  $("#offlineBtn").addEventListener("click", () => {
+    const unsorted = notes.filter(n => n.bucket === "unsorted");
+    if (unsorted.length === 0) { setStatus("Nothing to sort.", "ok"); return; }
+    unsorted.forEach(n => { n.bucket = keywordSort(n.text); n.autoSorted = true; });
+    saveJSON(KEY_NOTES, notes);
+    render();
+    setStatus(`Sorted ${unsorted.length} note(s) with keyword rules. 📦`, "ok");
+  });
+
+  // ---------- bucket editor ----------
+  const renderBucketEditor = () => {
+    const list = $("#bucketEditList");
+    list.innerHTML = sortableBuckets.map(b => `
+      <div class="bucket-edit-row">
+        <span class="emoji">${b.emoji}</span>
+        <span class="name">${escapeHtml(b.name)}</span>
+        ${b.builtIn
+          ? `<span class="builtin">built-in</span>`
+          : `<button class="del" data-rm="${b.id}">remove</button>`
+        }
+      </div>
+    `).join("");
+    list.querySelectorAll("[data-rm]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const id = btn.getAttribute("data-rm");
+        const affected = notes.filter(n => n.bucket === id).length;
+        const msg = affected > 0
+          ? `Remove this bucket? ${affected} note(s) will move back to Unsorted.`
+          : `Remove this bucket?`;
+        if (!confirm(msg)) return;
+        sortableBuckets = sortableBuckets.filter(b => b.id !== id);
+        saveJSON(KEY_BUCKETS, sortableBuckets);
+        notes.forEach(n => { if (n.bucket === id) n.bucket = "unsorted"; });
+        saveJSON(KEY_NOTES, notes);
+        renderBucketEditor();
+        render();
+      });
+    });
+  };
+
+  $("#addBucketBtn").addEventListener("click", () => {
+    const emoji = $("#newBucketEmoji").value.trim() || "📌";
+    const name = $("#newBucketName").value.trim();
+    const desc = $("#newBucketDesc").value.trim();
+    if (!name) { setStatus("Give your bucket a name.", "err"); return; }
+    let id = slugify(name);
+    // ensure unique id
+    while (allBuckets().some(b => b.id === id)) id = id + "-" + Math.floor(Math.random() * 100);
+    sortableBuckets.push({ id, name, emoji, description: desc || name, builtIn: false });
+    saveJSON(KEY_BUCKETS, sortableBuckets);
+    $("#newBucketEmoji").value = "";
+    $("#newBucketName").value = "";
+    $("#newBucketDesc").value = "";
+    renderBucketEditor();
+    render();
+    setStatus(`Added "${name}" bucket. ✨`, "ok");
+  });
+
+  // ---------- settings: key handling ----------
+  const cleanKey = (s) => (s || "").replace(/\s+/g, "").trim();
+
+  $("#saveKeyBtn").addEventListener("click", () => {
+    const k = cleanKey(apiKeyInput.value);
+    apiKeyInput.value = k;
+    if (!k.startsWith("sk-ant-")) {
+      setStatus("That doesn't look like an Anthropic key (should start with sk-ant-).", "err"); return;
+    }
+    if (k.length < 50) {
+      setStatus("Key looks too short — make sure you copied the whole thing.", "err"); return;
+    }
+    saveKey(k);
+    setStatus("API key saved. Tap 'Test key' to verify it works.", "ok");
+  });
+
+  $("#testKeyBtn").addEventListener("click", async () => {
+    const k = cleanKey(apiKeyInput.value) || loadKey();
+    if (!k) { setStatus("Paste a key first.", "err"); return; }
+    setStatus("Testing key against Anthropic...");
+    $("#testKeyBtn").disabled = true;
+    try {
+      const res = await fetch("https://api.anthropic.com/v1/messages", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-api-key": k,
+          "anthropic-version": "2023-06-01",
+          "anthropic-dangerous-direct-browser-access": "true",
+        },
+        body: JSON.stringify({
+          model: "claude-haiku-4-5-20251001",
+          max_tokens: 1,
+          messages: [{ role: "user", content: "hi" }],
+        }),
+      });
+      if (res.ok) {
+        saveKey(k);
+        setStatus("✅ Key works! You're good to use AI sync.", "ok");
+        return;
+      }
+      let body = {};
+      try { body = await res.json(); } catch {}
+      const msg = body?.error?.message || "";
+      let diagnosis = `HTTP ${res.status}: ${msg}`;
+      if (res.status === 401) {
+        diagnosis = "❌ Anthropic rejected this key. Common causes:\n" +
+                    "1) Key is from claude.ai (the chat site) — API keys come from console.anthropic.com only.\n" +
+                    "2) Key belongs to a different workspace than your $5 credit.\n" +
+                    "3) Paste included hidden characters. Try retyping the last 4 chars.";
+      } else if (res.status === 400 && /model/i.test(msg)) {
+        diagnosis = "❌ Your account can't use claude-haiku-4-5 yet. Check model access at console.anthropic.com.";
+      } else if (res.status === 429) {
+        diagnosis = "⚠️ Rate limited. Key is probably fine — wait a minute.";
+      } else if (/credit|billing/i.test(msg)) {
+        diagnosis = "❌ Account is out of credit. Add funds at console.anthropic.com/settings/billing.";
+      }
+      setStatus(diagnosis, "err");
+    } catch (err) {
+      setStatus("Network error while testing: " + err.message, "err");
+    } finally {
+      $("#testKeyBtn").disabled = false;
+    }
+  });
+
+  // ---------- data export / clear ----------
+  $("#exportBtn").addEventListener("click", () => {
+    const blob = new Blob([JSON.stringify({ notes, buckets: sortableBuckets }, null, 2)],
+                         { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `brain-dump-${new Date().toISOString().slice(0,10)}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  });
+
+  $("#clearBtn").addEventListener("click", () => {
+    if (!confirm("Delete ALL notes? This can't be undone.")) return;
+    notes = [];
+    saveJSON(KEY_NOTES, notes);
+    render();
+    setStatus("All notes cleared.", "ok");
+  });
+
+  // ---------- init ----------
+  renderBucketEditor();
+  render();
+  input.addEventListener("focus", () => {
+    setTimeout(() => input.scrollIntoView({ block: "center", behavior: "smooth" }), 300);
+  });
+})();
 </script>
 </body>
 </html>
